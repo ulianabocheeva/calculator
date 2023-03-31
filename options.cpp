@@ -42,12 +42,16 @@ double trig(struct options options){
     else if (operate=="cos")
         res =(cos(options.num1));
     else if ((operate=="tg")||(operate=="ctg")){
-        res =(tan(options.num1));
-        if (operate=="ctg"){
-            if (options.num1!=0)
-                res=(1/(tan(options.num1)));
-            else
-                res=ERROR;
+        if (cos(options.num1)==0)
+            res=ERROR;
+        else{
+            res =(tan(options.num1));
+            if (operate=="ctg"){
+                if (options.num1!=0)
+                    res=(1/(tan(options.num1)));
+                else
+                    res=ERROR;
+            }
         }
     }
     return res; //98765e-99

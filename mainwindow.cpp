@@ -118,7 +118,7 @@ void MainWindow::on_btn_trig_clicked(){
     options.operation=var.data();//явное приведение из QString в char* ()
     double result=entryPoint(trigOperations,options);//результат выполнения функции
     if (result==ERROR)//если функция не существует
-        QMessageBox::information(this,"Error","The function does not exist");//information-с целью информировани, this - указатель на экземпляр класса
+        QMessageBox::critical(this,"Error","The function does not exist");//information-с целью информировани, this - указатель на экземпляр класса
     else
         num=QString::number(result);//в num записывается результат
     ui->lbl_for_text->setText(num);//вывод результата на экран
@@ -192,19 +192,21 @@ void MainWindow::on_btn_for_MR_clicked(){
 }
 
 void MainWindow::on_btn_for_MC_clicked(){
-    memory="0";//обнуление переменной memory
-    on_btn_for_cancel_clicked();
-
+    memory="0";//обнуление переменной memorys
 }
 
 void MainWindow::on_btn_for_Mplus_clicked(){
     QString num=ui->lbl_for_text->text();//запись во временную переменную текста с экрана
-    memory =QString::number(memory.toDouble()+num.toDouble());//явное приведение double к QString
+    char op[] = {'+'};
+    struct options options = {memory.toDouble(),num.toDouble(),op};
+    memory=QString::number(entryPoint(operate,options));
 }
 
 void MainWindow::on_btn_for_Mminus_clicked(){
     QString num=ui->lbl_for_text->text();//запись во временную переменную текста с экрана
-    memory=QString::number(memory.toDouble()-num.toDouble());//явное приведение double к QString
+    char op[] = {'-'};
+    struct options options = {memory.toDouble(),num.toDouble(),op};
+    memory=QString::number(entryPoint(operate,options));
 }
 
 QString MainWindow::actions(QString num1,QString num2,QString operation){
