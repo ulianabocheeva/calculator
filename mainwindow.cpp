@@ -63,7 +63,6 @@ void MainWindow::enabledNum(bool statement){
 
 void MainWindow::on_btn_for_numbers_clicked(){
     QPushButton *btn = (QPushButton *)sender();
-    ui->btn_for_neg->setEnabled(false);
     ui->btn_for_delete->setEnabled(true);
     enabledButtons(true);
     enabledTrigButtons(true);
@@ -95,7 +94,6 @@ void MainWindow::on_btn_for_point_clicked(){
 void MainWindow::on_btn_for_options_clicked(){
     QPushButton *btn = (QPushButton *)sender();//sender тип данных QObject* (класс, вокруг которого построена объектная модель Qt)
     ui->btn_for_point->setEnabled(false);//блокирование кнопок
-    ui->btn_for_neg->setEnabled(true);//блокировка кнопки -
     enabledButtons(false);//блокировка операций
     enabledTrigButtons(false);//блокировка тригонометрических функций
     enabledNum(true);//разблокировка цифр
@@ -118,7 +116,7 @@ void MainWindow::on_btn_trig_clicked(){
     options.num2=0;//запись в структуру
     QByteArray var = func.toLatin1(); // явное приведение из QString в char* ()
     options.operation=var.data();//явное приведение из QString в char* ()
-    double result=trigOperations(options);//результат выполнения функции
+    double result=entryPoint(trigOperations,options);//результат выполнения функции
     if (result==ERROR)//если функция не существует
         QMessageBox::information(this,"Error","The function does not exist");//information-с целью информировани, this - указатель на экземпляр класса
     else
@@ -128,15 +126,14 @@ void MainWindow::on_btn_trig_clicked(){
 
 void MainWindow::on_btn_for_equall_clicked(){
     ui->btn_for_equall->setEnabled(false);//блокировка =
-     num1=actions(num1,ui->lbl_for_text->text(),operation);
+    num1=actions(num1,ui->lbl_for_text->text(),operation);
     ui->lbl_for_text->setText(num1);//вывод на экран результата
     if (ui->lbl_for_text->text().contains("e")){//если запись содержит экспоненту
         ui->btn_for_delete->setEnabled(false);//блокировка кнопоки удаления цифр
         enabledNum(false);//блокировка цифр
     }
-    if (ui->lbl_for_text->text().contains("inf")){//если запись равна бесконечности
+    if ((ui->lbl_for_text->text().contains("inf"))||(ui->lbl_for_text->text().contains("+"))){//если запись равна бесконечности
         ui->btn_for_point->setEnabled(false);//блокировка кнопки .
-        ui->btn_for_neg->setEnabled(false);//блокировка кнопки -
         ui->btn_for_delete->setEnabled(false);//блокировка кнопки удаления цифр
         enabledButtons(false);//блокировка кнопок
         enabledTrigButtons(false);//блокировка тригонометрических функций
@@ -146,15 +143,20 @@ void MainWindow::on_btn_for_equall_clicked(){
 }
 
 void MainWindow::on_btn_for_neg_clicked(){
-    ui->lbl_for_text->setText("-");//вывод - на экран
-    ui->btn_for_neg->setEnabled(false);//блокировка кнопок
+    QString str = ui->lbl_for_text->text();//вывод - на экран
+    if (str.startsWith("-")){
+        str.remove(0,1);
+        ui->lbl_for_text->setText(str);
+    }
+    else if ((ui->lbl_for_text->text()!="")&&(ui->lbl_for_text->text()!="0")){
+        ui->lbl_for_text->setText("-"+str);
+    }
 }
 
 void MainWindow::on_btn_for_delete_clicked(){
     QString str = ui->lbl_for_text->text();//запись в str текста с текстлейбл
     str.chop(1);//удаляет символ с конца строки
     if (str.isEmpty()){//если строка пуста
-        ui->btn_for_neg->setEnabled(true);//блокировка кнопки -
         ui->btn_for_point->setEnabled(false);//блокировка кнопки .
         enabledButtons(false);//блокировка кнопок
     }
@@ -167,7 +169,6 @@ void MainWindow::on_btn_for_cancel_clicked(){
     ui->lbl_for_text->setText("");//установка пустой строки
     num1="";//обнуление переменной
     operation="";//обнуление переменной
-    ui->btn_for_neg->setEnabled(true);//блокировка кнопки -
     ui->btn_for_point->setEnabled(false);//блокировка кнопки .
     enabledButtons(false);//блокировка кнопок действий
     enabledNum(true);//блокировка цифр
@@ -183,10 +184,17 @@ void MainWindow::on_btn_for_M_clicked(){
 
 void MainWindow::on_btn_for_MR_clicked(){
     ui->lbl_for_text->setText(memory);//вывод переменной memory на экран
+    if ((ui->lbl_for_text->text().contains("inf"))||(ui->lbl_for_text->text().contains("e"))){
+        enabledNum(false);
+        ui->btn_for_delete->setEnabled(false);
+        ui->btn_for_point->setEnabled(false);
+    }
 }
 
 void MainWindow::on_btn_for_MC_clicked(){
     memory="0";//обнуление переменной memory
+    on_btn_for_cancel_clicked();
+
 }
 
 void MainWindow::on_btn_for_Mplus_clicked(){
@@ -205,7 +213,7 @@ QString MainWindow::actions(QString num1,QString num2,QString operation){
     options.num2=num2.toDouble();//запись в структуру
     QByteArray var = operation.toLatin1(); // явное приведение из QString в char* ()
     options.operation=var.data();// явное приведение из QString в char* ()
-    double result=operate(options);//запись результата функции
+    double result=entryPoint(operate,options);//запись результата функции
     if (result==ERROR){//если какая-то ошибка
         QMessageBox::information(this,"Error","It is forbidden to divide by zero");//information-с целью информировани, this - указатель на экземпляр класса
         this->on_btn_for_cancel_clicked();//числа, над которыми до этого были произведены действия уже записаны в num1 и не теряются,

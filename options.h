@@ -4,19 +4,18 @@
 #include <stdio.h>
 #define ERROR 98765e-99
 
+enum FuncType
+{
+    operate,
+    trigOperations
+};
+
 struct options{
     double num1;
     double num2;
     char* operation;
 };
 
-struct Result {
-    char error[20];
-    double value;
-    int code;
-};
-
-double operate(struct options options);
-double trigOperations(struct options options);
+double entryPoint(FuncType ft, struct options options);
 
 #endif // OPTIONS_H

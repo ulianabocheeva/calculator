@@ -1,6 +1,24 @@
 #include "options.h"
 
-double operate(struct options options){
+double operation(struct options options);
+double trig(struct options options);
+
+double entryPoint(FuncType ft, struct options options)
+{
+    double result;
+    switch(ft)
+    {
+        case operate:
+            result = operation(options);
+            break;
+        case trigOperations:
+            result = trig(options);
+            break;
+    }
+    return result;
+}
+
+double operation(struct options options){
     double res=0;
     std::string operate=options.operation;
     if (operate=="+")
@@ -16,7 +34,7 @@ double operate(struct options options){
     return res; //98765e-99
 }
 
-double trigOperations(struct options options){
+double trig(struct options options){
     double res=0;
     std::string operate=options.operation;
     if (operate=="sin")
